@@ -1,523 +1,133 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Shado Private Chat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg-color: #090714;
-      --card-bg: rgba(22, 16, 41, 0.85);
-      --accent-purple: #8b5cf6;
-      --glow-purple: #a855f7;
-      --text-main: #f3f4f6;
-      --text-muted: #9ca3af;
-      --shadow-aura: 0 0 20px rgba(139, 92, 246, 0.35);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Tajawal', sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .app-container {
-      width: 100%;
-      max-width: 480px;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background: radial-gradient(circle at top, #1a0b36 0%, #090714 70%);
-      position: relative;
-    }
-
-    /* Auth Screen */
-    #auth-screen {
-      position: absolute;
-      inset: 0;
-      background: var(--bg-color);
-      z-index: 200;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 24px;
-    }
-
-    .auth-card {
-      background: var(--card-bg);
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      border-radius: 20px;
-      padding: 30px 20px;
-      width: 100%;
-      text-align: center;
-      box-shadow: var(--shadow-aura);
-      backdrop-filter: blur(10px);
-    }
-
-    .auth-title {
-      font-size: 2.2rem;
-      font-weight: 900;
-      color: var(--glow-purple);
-      text-shadow: 0 0 10px rgba(168, 85, 247, 0.6);
-      margin-bottom: 8px;
-    }
-
-    .auth-subtitle {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 24px;
-    }
-
-    .input-field {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid rgba(139, 92, 246, 0.4);
-      background: rgba(10, 6, 24, 0.8);
-      color: #fff;
-      outline: none;
-      margin-bottom: 12px;
-      font-size: 1.1rem;
-      text-align: center;
-      direction: ltr;
-    }
-
-    .input-field::placeholder {
-      direction: rtl;
-      font-size: 0.95rem;
-    }
-
-    .btn-primary {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: none;
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      color: #fff;
-      font-weight: bold;
-      font-size: 1rem;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-      margin-bottom: 10px;
-    }
-
-    /* Header */
-    header {
-      padding: 16px 20px;
-      background: var(--card-bg);
-      border-bottom: 1px solid rgba(139, 92, 246, 0.2);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      backdrop-filter: blur(10px);
-      z-index: 10;
-    }
-
-    .logo {
-      font-size: 1.4rem;
-      font-weight: 900;
-      color: var(--glow-purple);
-      text-shadow: 0 0 8px rgba(168, 85, 247, 0.5);
-    }
-
-    .back-btn {
-      background: none;
-      border: none;
-      color: var(--glow-purple);
-      font-size: 1.2rem;
-      cursor: pointer;
-      display: none;
-      font-weight: bold;
-    }
-
-    /* Views */
-    .view {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    #users-view {
-      padding: 16px;
-      overflow-y: auto;
-    }
-
-    .section-title {
-      font-size: 0.9rem;
-      color: var(--text-muted);
-      margin-bottom: 12px;
-      font-weight: bold;
-    }
-
-    .user-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      background: rgba(22, 16, 41, 0.6);
-      border: 1px solid rgba(139, 92, 246, 0.2);
-      padding: 14px;
-      border-radius: 16px;
-      margin-bottom: 10px;
-      cursor: pointer;
-    }
-
-    .user-avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: linear-gradient(135deg, #8b5cf6, #4c1d95);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      color: #fff;
-      font-size: 1.1rem;
-    }
-
-    .user-info {
-      flex: 1;
-    }
-
-    .user-name {
-      font-weight: bold;
-      font-size: 1rem;
-      color: var(--text-main);
-    }
-
-    .user-status {
-      font-size: 0.75rem;
-      color: #10b981;
-    }
-
-    /* Chat Messages Area */
-    #chat-view {
-      display: none;
-    }
-
-    .chat-messages {
-      flex: 1;
-      padding: 16px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .message {
-      max-width: 75%;
-      padding: 10px 14px;
-      border-radius: 16px;
-      font-size: 0.95rem;
-      line-height: 1.4;
-      word-wrap: break-word;
-    }
-
-    .message.sent {
-      align-self: flex-start;
-      background: linear-gradient(135deg, #7c3aed, #5b21b6);
-      color: #fff;
-      border-bottom-right-radius: 2px;
-    }
-
-    .message.received {
-      align-self: flex-end;
-      background: rgba(30, 27, 51, 0.85);
-      border: 1px solid rgba(139, 92, 246, 0.2);
-      color: var(--text-main);
-      border-bottom-left-radius: 2px;
-    }
-
-    .chat-input-container {
-      padding: 12px 16px;
-      background: var(--card-bg);
-      border-top: 1px solid rgba(139, 92, 246, 0.2);
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-
-    .chat-input {
-      flex: 1;
-      padding: 12px 16px;
-      border-radius: 25px;
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      background: rgba(10, 6, 24, 0.9);
-      color: #fff;
-      outline: none;
-      font-size: 0.95rem;
-    }
-
-    .send-btn {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      border: none;
-      background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shado - شادو</title>
+    <!-- مكتبات فايربيس -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #0d1117; color: #c9d1d9; margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; }
+        .container { width: 100%; max-width: 400px; background: #161b22; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); text-align: center; }
+        input, button { width: 90%; padding: 12px; margin: 10px 0; border-radius: 8px; border: 1px solid #30363d; background: #0d1117; color: #fff; font-size: 16px; }
+        button { background: #8250df; border: none; cursor: pointer; font-weight: bold; }
+        button:hover { background: #6e40c9; }
+        #chat-section { display: none; text-align: right; height: 80vh; display: flex; flex-direction: column; justify-content: space-between; }
+        .typing { font-size: 12px; color: #8b949e; display: none; font-style: italic; margin-bottom: 5px; }
+    </style>
 </head>
 <body>
 
-  <div class="app-container">
-    <!-- Auth Screen -->
-    <div id="auth-screen">
-      <div class="auth-card">
-        <div class="auth-title">SHADO</div>
-        <div class="auth-subtitle">أدخل رقم هاتفك للبدء</div>
-        
-        <!-- Step 1: Phone Input -->
-        <div id="phone-step">
-          <input type="tel" id="phone-input" class="input-field" placeholder="+201234567890">
-          <button id="send-code-btn" class="btn-primary">إرسال رمز التحقق</button>
-        </div>
-
-        <!-- Step 2: OTP Input -->
-        <div id="otp-step" style="display: none;">
-          <input type="text" id="otp-input" class="input-field" placeholder="أدخل الكود (6 أرقام)">
-          <button id="verify-code-btn" class="btn-primary">تأكيد ودخول</button>
-        </div>
-
-        <div id="recaptcha-container"></div>
-      </div>
+<div class="container" id="auth-container">
+    <h2>SHADO</h2>
+    <p>أدخل رقم هاتفك للبدء</p>
+    <input type="text" id="phone-number" placeholder="+20xxxxxxxxxx">
+    <button id="send-otp-btn" onclick="sendOtp()">إرسال رمز التحقق</button>
+    
+    <div id="otp-box" style="display:none;">
+        <input type="text" id="otp-code" placeholder="أدخل رمز التحقق (OTP)">
+        <button onclick="verifyOtp()">تأكيد الكود</button>
     </div>
+    <div id="recaptcha-container"></div>
+</div>
 
-    <!-- Header -->
-    <header>
-      <button id="back-btn" class="back-btn">➜ رجوع</button>
-      <div id="header-title" class="logo">SHADO ⚡</div>
-    </header>
-
-    <!-- View 1: Users List -->
-    <div id="users-view" class="view">
-      <div class="section-title">المستخدمون المسجلون:</div>
-      <div id="users-list"></div>
+<div class="container" id="chat-section" style="display:none;">
+    <div>
+        <h3>غرفة محادثة شادو</h3>
+        <span id="user-status" style="font-size: 12px; color: #3fb950;">● متصل الآن</span>
     </div>
-
-    <!-- View 2: Private Chat Room -->
-    <div id="chat-view" class="view">
-      <div class="chat-messages" id="chat-messages"></div>
-      <div class="chat-input-container">
-        <input type="text" id="message-input" class="chat-input" placeholder="اكتب رسالتك..." autocomplete="off">
-        <button id="send-btn" class="send-btn">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-        </button>
-      </div>
+    <div id="messages-list" style="flex-grow: 1; overflow-y: auto; text-align: right; padding: 10px; background: #0d1117; border-radius: 8px; margin: 10px 0;"></div>
+    
+    <div class="typing" id="typing-indicator">يكتب الآن... ✍️</div>
+    
+    <div style="display: flex;">
+        <input type="text" id="message-input" placeholder="اكتب رسالة..." style="flex-grow: 1; margin: 0;" oninput="notifyTyping()">
+        <button onclick="sendMessage()" style="width: 80px; margin: 0 5px 0 0;">إرسال</button>
     </div>
-  </div>
+</div>
 
-  <!-- Firebase Integration -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, RecaptchaVerifier, signInWithPhoneNumber, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, setDoc, doc, addDoc, query, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
+<script>
+    // إعدادات فايربيس الخاصة بك
     const firebaseConfig = {
-      apiKey: "AIzaSyDSxMpRIA55c1oqUDDsIygyAWrKg-fMJx8",
-      authDomain: "shado-73a7e.firebaseapp.com",
-      projectId: "shado-73a7e",
-      storageBucket: "shado-73a7e.firebasestorage.app",
-      messagingSenderId: "414771437387",
-      appId: "1:414771437387:web:4d938afc085a986f77d2ce",
-      measurementId: "G-3WX2GRCS0F"
+        apiKey: "YOUR_API_KEY",
+        authDomain: "YOUR_AUTH_DOMAIN",
+        projectId: "YOUR_PROJECT_ID",
+        storageBucket: "YOUR_STORAGE_BUCKET",
+        messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+        appId: "YOUR_APP_ID"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
 
-    let currentUser = null;
-    let currentChatPartner = '';
-    let currentChatId = '';
-    let unsubscribeMessages = null;
-    let confirmationResult = null;
-
-    const authScreen = document.getElementById('auth-screen');
-    const phoneStep = document.getElementById('phone-step');
-    const otpStep = document.getElementById('otp-step');
-    const phoneInput = document.getElementById('phone-input');
-    const sendCodeBtn = document.getElementById('send-code-btn');
-    const otpInput = document.getElementById('otp-input');
-    const verifyCodeBtn = document.getElementById('verify-code-btn');
-
-    const usersView = document.getElementById('users-view');
-    const chatView = document.getElementById('chat-view');
-    const usersList = document.getElementById('users-list');
-    const headerTitle = document.getElementById('header-title');
-    const backBtn = document.getElementById('back-btn');
-    const messageInput = document.getElementById('message-input');
-    const sendBtn = document.getElementById('send-btn');
-    const chatMessages = document.getElementById('chat-messages');
-
-    // Monitor Auth State
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        currentUser = {
-          uid: user.uid,
-          name: user.phoneNumber || "مستخدم Shado"
-        };
-        authScreen.style.display = 'none';
-        registerUser(currentUser);
-        loadUsers();
-      }
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+        'size': 'invisible'
     });
 
-    function initRecaptcha() {
-      if (!window.recaptchaVerifier) {
-        window.recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-          'size': 'invisible'
-        });
-      }
-    }
-
-    // Send SMS Code
-    sendCodeBtn.addEventListener('click', async () => {
-      const phoneNumber = phoneInput.value.trim();
-      if (!phoneNumber.startsWith('+')) {
-        return alert("يرجى كتابة رقم الهاتف مسبوقاً بكود الدولة (مثال: +201234567890)");
-      }
-
-      try {
-        initRecaptcha();
+    function sendOtp() {
+        const phoneNumber = document.getElementById('phone-number').value;
         const appVerifier = window.recaptchaVerifier;
-        
-        confirmationResult = await signInWithPhoneNumber(auth, phoneNumber, appVerifier);
-        phoneStep.style.display = 'none';
-        otpStep.style.display = 'block';
-        alert("تم إرسال كود التحقق!");
-      } catch (error) {
-        console.error(error);
-        alert("حدث خطأ أثناء إرسال الكود: " + error.message);
-      }
-    });
-
-    // Verify OTP Code
-    verifyCodeBtn.addEventListener('click', async () => {
-      const code = otpInput.value.trim();
-      if (confirmationResult && code) {
-        try {
-          await confirmationResult.confirm(code);
-        } catch (error) {
-          alert("الكود غير صحيح، حاول مجدداً!");
-        }
-      }
-    });
-
-    async function registerUser(user) {
-      try {
-        await setDoc(doc(db, "users", user.uid), {
-          uid: user.uid,
-          username: user.name,
-          lastSeen: serverTimestamp()
-        }, { merge: true });
-      } catch (e) {
-        console.error("Error registering user:", e);
-      }
+        auth.signInWithPhoneNumber(phoneNumber, appVerifier)
+            .then((confirmationResult) => {
+                window.confirmationResult = confirmationResult;
+                document.getElementById('otp-box').style.display = 'block';
+                alert("تم إرسال الكود بنجاح!");
+            }).catch((error) => {
+                alert("حدث خطأ أثناء إرسال الكود: " + error.message);
+            });
     }
 
-    function loadUsers() {
-      onSnapshot(collection(db, "users"), (snapshot) => {
-        usersList.innerHTML = '';
-        snapshot.forEach((doc) => {
-          const user = doc.data();
-          if (user.uid !== currentUser.uid) {
-            const userDiv = document.createElement('div');
-            userDiv.className = 'user-item';
-            userDiv.innerHTML = `
-              <div class="user-avatar">📱</div>
-              <div class="user-info">
-                <div class="user-name">${user.username}</div>
-                <div class="user-status">متصل الآن</div>
-              </div>
-            `;
-            userDiv.onclick = () => openChat(user.uid, user.username);
-            usersList.appendChild(userDiv);
-          }
+    function verifyOtp() {
+        const code = document.getElementById('otp-code').value;
+        window.confirmationResult.confirm(code).then((result) => {
+            const user = result.user;
+            // تحديث حالة المستخدم إلى متصل في الفايرستور
+            db.collection('users').doc(user.uid).set({
+                status: 'online',
+                lastSeen: firebase.firestore.FieldValue.serverTimestamp()
+            }, { merge: true });
+
+            document.getElementById('auth-container').style.display = 'none';
+            document.getElementById('chat-section').style.display = 'flex';
+            loadMessages();
+        }).catch((error) => {
+            alert("الكود غير صحيح!");
         });
-      });
     }
 
-    function openChat(partnerUid, partnerName) {
-      currentChatPartner = partnerName;
-      currentChatId = [currentUser.uid, partnerUid].sort().join('_');
-
-      usersView.style.display = 'none';
-      chatView.style.display = 'flex';
-      backBtn.style.display = 'block';
-      headerTitle.textContent = partnerName;
-
-      listenToMessages();
-    }
-
-    backBtn.addEventListener('click', () => {
-      chatView.style.display = 'none';
-      usersView.style.display = 'flex';
-      backBtn.style.display = 'none';
-      headerTitle.textContent = 'SHADO ⚡';
-      if (unsubscribeMessages) unsubscribeMessages();
-    });
-
-    function listenToMessages() {
-      if (unsubscribeMessages) unsubscribeMessages();
-
-      const q = query(collection(db, "chats", currentChatId, "messages"), orderBy("createdAt", "asc"));
-      unsubscribeMessages = onSnapshot(q, (snapshot) => {
-        chatMessages.innerHTML = '';
-        snapshot.forEach((doc) => {
-          const data = doc.data();
-          const msgDiv = document.createElement('div');
-          const isMe = data.senderUid === currentUser.uid;
-          
-          msgDiv.className = `message ${isMe ? 'sent' : 'received'}`;
-          msgDiv.innerHTML = `<div>${data.text}</div>`;
-          chatMessages.appendChild(msgDiv);
-        });
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-      });
-    }
-
-    async function sendMessage() {
-      const text = messageInput.value.trim();
-      if (text && currentChatId) {
-        messageInput.value = '';
-        try {
-          await addDoc(collection(db, "chats", currentChatId, "messages"), {
+    function sendMessage() {
+        const text = document.getElementById('message-input').value;
+        if (!text.trim()) return;
+        db.collection('messages').add({
             text: text,
-            senderUid: currentUser.uid,
-            createdAt: serverTimestamp()
-          });
-        } catch (e) {
-          console.error("Error sending message:", e);
-        }
-      }
+            sender: auth.currentUser.phoneNumber,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        }).then(() => {
+            document.getElementById('message-input').value = '';
+        });
     }
 
-    sendBtn.addEventListener('click', sendMessage);
-    messageInput.addEventListener('keypress', (e) => {
-      if (e.key === 'Enter') sendMessage();
-    });
-  </script>
+    function loadMessages() {
+        db.collection('messages').orderBy('timestamp').onSnapshot((snapshot) => {
+            const list = document.getElementById('messages-list');
+            list.innerHTML = '';
+            snapshot.forEach((doc) => {
+                const msg = doc.data();
+                list.innerHTML += `<div style="margin-bottom: 8px;"><b>${msg.sender}:</b> ${msg.text}</div>`;
+            });
+            list.scrollTop = list.scrollHeight;
+        });
+    }
+
+    function notifyTyping() {
+        // ميزة إشعار الكتابة التفاعلية
+        const indicator = document.getElementById('typing-indicator');
+        // يمكن ربطها بقاعدة البيانات لاحقاً لتظهر للطرف الآخر
+    }
+</script>
+
 </body>
-  </html>
-  
+</html>
